@@ -12,7 +12,7 @@ import { useFavoritePokemon } from "../../app/contexts/FavoritePokemonContext";
 import Navbar from "../../app/components/Navbar";
 
 export default function PokedexPage() {
-  const { addPokemon } = usePokemonTeam();
+  const { addPokemon, team } = usePokemonTeam();
 
   const { toggleFavorite, isFavorite } =
     useFavoritePokemon();
@@ -134,6 +134,12 @@ export default function PokedexPage() {
       }
     });
 
+  function isCaptured(name: string) {
+    return team.some(
+      (pokemon) => pokemon.name === name
+    );
+  }
+
   async function handleOpenPokemon(name: string) {
     try {
       const pokemonDetails =
@@ -150,15 +156,52 @@ export default function PokedexPage() {
   }
 
   return (
-    <div>
+    <div
+      style={{
+        minHeight: "100vh",
+        background:
+          "linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%)",
+      }}
+    >
       <style>{spinnerStyle}</style>
 
       <Navbar />
 
+      <section
+        style={{
+          padding: "40px 20px 20px",
+          textAlign: "center",
+        }}
+      >
+        <h1
+          style={{
+            margin: 0,
+            fontSize: "42px",
+            color: "#1f2937",
+          }}
+        >
+          Pokédex
+        </h1>
+
+        <p
+          style={{
+            marginTop: "10px",
+            color: "#6b7280",
+            fontSize: "18px",
+          }}
+        >
+          Explore, favorite e capture seus Pokémons favoritos.
+        </p>
+      </section>
+
       <div
         style={{
+          margin: "0 auto 24px",
           padding: "20px",
-          marginBottom: "20px",
+          maxWidth: "1100px",
+          backgroundColor: "#fff",
+          borderRadius: "20px",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
         }}
       >
         <input
@@ -168,20 +211,22 @@ export default function PokedexPage() {
           onChange={(e) => setSearch(e.target.value)}
           style={{
             width: "100%",
-            padding: "12px",
-            borderRadius: "10px",
-            border: "1px solid #ccc",
+            padding: "16px",
+            borderRadius: "14px",
+            border: "1px solid #d1d5db",
             fontSize: "16px",
             boxSizing: "border-box",
+            outline: "none",
           }}
         />
 
         <div
           style={{
             display: "flex",
-            gap: "10px",
+            gap: "12px",
             flexWrap: "wrap",
-            marginTop: "12px",
+            marginTop: "16px",
+            justifyContent: "space-between",
           }}
         >
           <button
@@ -189,13 +234,13 @@ export default function PokedexPage() {
               setShowFavoritesOnly(!showFavoritesOnly)
             }
             style={{
-              padding: "10px 16px",
+              padding: "12px 18px",
               border: "none",
-              borderRadius: "8px",
+              borderRadius: "12px",
               cursor: "pointer",
               backgroundColor: showFavoritesOnly
                 ? "#ff4d6d"
-                : "#333",
+                : "#111827",
               color: "#fff",
               fontWeight: "bold",
             }}
@@ -209,11 +254,12 @@ export default function PokedexPage() {
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
             style={{
-              padding: "10px",
-              borderRadius: "8px",
-              border: "1px solid #ccc",
+              padding: "12px",
+              borderRadius: "12px",
+              border: "1px solid #d1d5db",
               fontWeight: "bold",
               cursor: "pointer",
+              backgroundColor: "#fff",
             }}
           >
             <option value="id-asc">
@@ -235,21 +281,22 @@ export default function PokedexPage() {
         style={{
           display: "flex",
           justifyContent: "center",
-          gap: "10px",
-          marginBottom: "20px",
+          gap: "12px",
+          marginBottom: "24px",
+          flexWrap: "wrap",
         }}
       >
         <button
           disabled={page === 1}
           onClick={() => setPage(page - 1)}
           style={{
-            padding: "10px 20px",
+            padding: "12px 22px",
             border: "none",
-            borderRadius: "8px",
+            borderRadius: "999px",
             cursor:
               page === 1 ? "not-allowed" : "pointer",
             backgroundColor:
-              page === 1 ? "#999" : "#333",
+              page === 1 ? "#9ca3af" : "#111827",
             color: "#fff",
             fontWeight: "bold",
           }}
@@ -262,6 +309,10 @@ export default function PokedexPage() {
             display: "flex",
             alignItems: "center",
             fontWeight: "bold",
+            backgroundColor: "#fff",
+            padding: "0 18px",
+            borderRadius: "999px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
           }}
         >
           Página {page}
@@ -270,11 +321,11 @@ export default function PokedexPage() {
         <button
           onClick={() => setPage(page + 1)}
           style={{
-            padding: "10px 20px",
+            padding: "12px 22px",
             border: "none",
-            borderRadius: "8px",
+            borderRadius: "999px",
             cursor: "pointer",
-            backgroundColor: "#333",
+            backgroundColor: "#111827",
             color: "#fff",
             fontWeight: "bold",
           }}
@@ -286,9 +337,10 @@ export default function PokedexPage() {
       {error && (
         <div
           style={{
-            margin: "20px",
+            margin: "20px auto",
+            maxWidth: "900px",
             padding: "20px",
-            borderRadius: "10px",
+            borderRadius: "14px",
             backgroundColor: "#ffe5e5",
             color: "#b00020",
             fontWeight: "bold",
@@ -315,7 +367,7 @@ export default function PokedexPage() {
               width: "60px",
               height: "60px",
               border: "6px solid #e5e5e5",
-              borderTop: "6px solid #ff1c1c",
+              borderTop: "6px solid #ef4444",
               borderRadius: "50%",
               animation: "spin 1s linear infinite",
             }}
@@ -330,9 +382,11 @@ export default function PokedexPage() {
           style={{
             display: "grid",
             gridTemplateColumns:
-              "repeat(auto-fit, minmax(180px, 1fr))",
-            gap: "20px",
+              "repeat(auto-fit, minmax(210px, 1fr))",
+            gap: "24px",
             padding: "20px",
+            maxWidth: "1200px",
+            margin: "0 auto",
           }}
         >
           {filteredPokemons.map((pokemon: any, index: number) => (
@@ -341,23 +395,23 @@ export default function PokedexPage() {
               onClick={() => handleOpenPokemon(pokemon.name)}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform =
-                  "translateY(-5px)";
+                  "translateY(-8px) scale(1.02)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform =
-                  "translateY(0)";
+                  "translateY(0) scale(1)";
               }}
               style={{
                 position: "relative",
-                border: "1px solid #e5e5e5",
-                borderRadius: "16px",
-                padding: "16px",
+                border: "1px solid #e5e7eb",
+                borderRadius: "22px",
+                padding: "20px",
                 textAlign: "center",
                 backgroundColor: "#fff",
-                transition: "0.2s",
+                transition: "0.25s",
                 cursor: "pointer",
                 boxShadow:
-                  "0 4px 10px rgba(0,0,0,0.08)",
+                  "0 12px 24px rgba(0,0,0,0.08)",
               }}
             >
               <button
@@ -368,12 +422,17 @@ export default function PokedexPage() {
                 }}
                 style={{
                   position: "absolute",
-                  top: "10px",
-                  right: "10px",
+                  top: "14px",
+                  right: "14px",
                   border: "none",
-                  backgroundColor: "transparent",
-                  fontSize: "24px",
+                  backgroundColor: "#f9fafb",
+                  fontSize: "22px",
                   cursor: "pointer",
+                  width: "42px",
+                  height: "42px",
+                  borderRadius: "50%",
+                  boxShadow:
+                    "0 4px 12px rgba(0,0,0,0.08)",
                 }}
               >
                 {isFavorite(pokemon.name)
@@ -381,21 +440,35 @@ export default function PokedexPage() {
                   : "🤍"}
               </button>
 
-              <img
-                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-                  (page - 1) * limit + index + 1
-                }.png`}
-                alt={pokemon.name}
+              <div
                 style={{
-                  width: "120px",
-                  height: "120px",
+                  width: "130px",
+                  height: "130px",
+                  borderRadius: "50%",
+                  background:
+                    "linear-gradient(135deg, #fef3c7, #fee2e2)",
+                  margin: "10px auto 14px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
-              />
+              >
+                <img
+                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+                    (page - 1) * limit + index + 1
+                  }.png`}
+                  alt={pokemon.name}
+                  style={{
+                    width: "120px",
+                    height: "120px",
+                  }}
+                />
+              </div>
 
               <p
                 style={{
                   fontWeight: "bold",
-                  color: "#777",
+                  color: "#9ca3af",
                   marginBottom: "4px",
                 }}
               >
@@ -406,8 +479,9 @@ export default function PokedexPage() {
                 style={{
                   textTransform: "capitalize",
                   fontWeight: "bold",
-                  fontSize: "18px",
+                  fontSize: "20px",
                   marginTop: 0,
+                  color: "#111827",
                 }}
               >
                 {pokemon.name}
@@ -416,6 +490,10 @@ export default function PokedexPage() {
               <button
                 onClick={(event) => {
                   event.stopPropagation();
+
+                  if (isCaptured(pokemon.name)) {
+                    return;
+                  }
 
                   addPokemon({
                     name: pokemon.name,
@@ -428,16 +506,26 @@ export default function PokedexPage() {
                 }}
                 style={{
                   marginTop: "10px",
-                  padding: "8px 12px",
+                  padding: "10px 14px",
                   border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  backgroundColor: "#4CAF50",
+                  borderRadius: "12px",
+                  cursor: isCaptured(pokemon.name)
+                    ? "default"
+                    : "pointer",
+                  backgroundColor: isCaptured(pokemon.name)
+                    ? "#ef4444"
+                    : "#22c55e",
                   color: "#fff",
                   fontWeight: "bold",
+                  width: "100%",
+                  opacity: isCaptured(pokemon.name)
+                    ? 0.95
+                    : 1,
                 }}
               >
-                Adicionar ao time
+                {isCaptured(pokemon.name)
+                  ? "Capturado ❤️"
+                  : "Capturar"}
               </button>
             </div>
           ))}
@@ -450,17 +538,18 @@ export default function PokedexPage() {
           style={{
             position: "fixed",
             inset: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.6)",
+            backgroundColor: "rgba(0, 0, 0, 0.65)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             zIndex: 10,
+            padding: "20px",
           }}
         >
           <div
             onClick={(event) => event.stopPropagation()}
             style={{
-              width: "350px",
+              width: "380px",
               maxHeight: "90vh",
               overflowY: "auto",
               background:
@@ -468,9 +557,10 @@ export default function PokedexPage() {
                   selectedPokemon.types[0].type.name
                 ] || "#fff",
               color: "#fff",
-              borderRadius: "16px",
-              padding: "20px",
+              borderRadius: "24px",
+              padding: "24px",
               textAlign: "center",
+              boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
             }}
           >
             <button
@@ -478,10 +568,13 @@ export default function PokedexPage() {
               style={{
                 float: "right",
                 border: "none",
-                backgroundColor: "transparent",
+                backgroundColor: "rgba(255,255,255,0.2)",
                 color: "#fff",
-                fontSize: "20px",
+                fontSize: "22px",
                 cursor: "pointer",
+                width: "36px",
+                height: "36px",
+                borderRadius: "50%",
               }}
             >
               ×
@@ -495,12 +588,18 @@ export default function PokedexPage() {
               }
               alt={selectedPokemon.name}
               style={{
-                width: "180px",
-                height: "180px",
+                width: "190px",
+                height: "190px",
               }}
             />
 
-            <h2 style={{ textTransform: "capitalize" }}>
+            <h2
+              style={{
+                textTransform: "capitalize",
+                fontSize: "30px",
+                marginBottom: "8px",
+              }}
+            >
               {selectedPokemon.name}
             </h2>
 
@@ -518,7 +617,7 @@ export default function PokedexPage() {
               {selectedPokemon.weight}
             </p>
 
-            <div style={{ marginTop: "10px" }}>
+            <div style={{ marginTop: "14px" }}>
               <strong>Tipos:</strong>
 
               <div
@@ -534,7 +633,7 @@ export default function PokedexPage() {
                   <span
                     key={item.type.name}
                     style={{
-                      padding: "6px 12px",
+                      padding: "7px 14px",
                       borderRadius: "999px",
                       color: "#fff",
                       fontWeight: "bold",
@@ -555,7 +654,7 @@ export default function PokedexPage() {
 
             <div
               style={{
-                marginTop: "20px",
+                marginTop: "22px",
                 textAlign: "left",
               }}
             >
@@ -564,7 +663,7 @@ export default function PokedexPage() {
               {selectedPokemon.stats.map((item: any) => (
                 <div
                   key={item.stat.name}
-                  style={{ marginBottom: "10px" }}
+                  style={{ marginBottom: "12px" }}
                 >
                   <strong
                     style={{
@@ -578,11 +677,11 @@ export default function PokedexPage() {
                   <div
                     style={{
                       width: "100%",
-                      height: "8px",
+                      height: "9px",
                       backgroundColor:
                         "rgba(255,255,255,0.3)",
-                      borderRadius: "8px",
-                      marginTop: "4px",
+                      borderRadius: "999px",
+                      marginTop: "5px",
                     }}
                   >
                     <div
@@ -593,7 +692,7 @@ export default function PokedexPage() {
                         )}%`,
                         height: "100%",
                         backgroundColor: "#fff",
-                        borderRadius: "8px",
+                        borderRadius: "999px",
                       }}
                     />
                   </div>
